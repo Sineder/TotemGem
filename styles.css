@@ -85,13 +85,13 @@ header {
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     padding: 10px; /* Adiciona espaçamento interno para as setas */
-    scrollbar-width: none; /* Esconde a barra de rolagem */
-    -ms-overflow-style: none;  /*Esconde a barra de rolagem no IE/Edge */
+    /*scrollbar-width: none; /* Esconde a barra de rolagem */
+    /*-ms-overflow-style: none;  /*Esconde a barra de rolagem no IE/Edge */
 }
 
-.carousel::-webkit-scrollbar {
-    display: none; /* Esconde a barra de rolagem no Chrome/Safari */
-}
+/*.carousel::-webkit-scrollbar {
+    display: none; /* Esconde a barra de rolagem no Chrome/Safari 
+}*/
 
 .carousel img {
     flex: 0 0 250px; /* Ajusta o tamanho das imagens */
