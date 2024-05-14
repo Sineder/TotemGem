@@ -80,7 +80,6 @@ header {
 
 /* Estilos do carrossel */
 .carousel {
-    background-color: #dfb241;
     position: relative; /* Para posicionar as setas absolutamente */
     display: flex;
     overflow-x: auto;
