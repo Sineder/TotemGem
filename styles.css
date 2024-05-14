@@ -2,7 +2,6 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #dfb241;
 }
 
 /* Estilos do cabeçalho */
@@ -81,6 +80,7 @@ header {
 
 /* Estilos do carrossel */
 .carousel {
+    background-color: #dfb241;
     position: relative; /* Para posicionar as setas absolutamente */
     display: flex;
     overflow-x: auto;
