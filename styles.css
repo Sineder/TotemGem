@@ -1,0 +1,121 @@
+/* Estilos gerais */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Estilos do cabeçalho */
+header {
+    background-color: #dfb241; /* Cor de fundo do cabeçalho */
+    color: #352b1b;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  img {
+    max-width: 100px;
+    height: auto;
+    margin-right: 20px;
+  }
+  
+  h1 {
+    margin: 0;
+    font-size: 30px; /* Tamanho do texto */
+  }
+  
+  nav {
+    text-align: center;
+    border-radius: 10px; /* Bordas arredondadas */
+    overflow: hidden; /* Evita que os botões ultrapassem o limite */
+    margin-top: 20px; /* Adiciona espaço entre o cabeçalho e o menu */
+  }
+  
+  nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex; /* Altera para flexbox para os botões ficarem lado a lado */
+    justify-content: center; /* Centraliza os botões horizontalmente */
+  }
+  
+  nav ul li {
+    margin: 0; /* Remove o espaçamento padrão dos itens de lista */
+  }
+  
+  nav ul li a {
+    display: inline-block; /* Torna os links em blocos para aplicar o espaçamento */
+    padding: 15px 40px; /* Ajusta o tamanho do botão */
+    color: #352b1b; /* Cor do texto */
+    text-decoration: none;
+    border-radius: 10px; /* Borda arredondada */
+    font-size: 20px; /* Tamanho do texto */
+  }
+  
+  /* Adiciona espaçamento entre os botões */
+  nav ul li:not(:last-child) a {
+    margin-right: 20px; /* Espaçamento entre os botões */
+  }
+  
+  /* Botões */
+  nav ul li:nth-child(1) a,
+  nav ul li:nth-child(2) a,
+  nav ul li:nth-child(3) a {
+    background-color: #a37706; /* Cor de fundo dos botões */
+  }
+  
+  nav ul li a:hover {
+    background-color: #875b04; /* Cor de fundo ao passar o mouse */
+  }
+
+/* Espaçamento entre cabeçalho e carrossel */
+.spacer {
+    height: 20px;
+}
+
+/* Estilos do carrossel */
+.carousel {
+    position: relative; /* Para posicionar as setas absolutamente */
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 10px; /* Adiciona espaçamento interno para as setas */
+    /*scrollbar-width: none; /* Esconde a barra de rolagem */
+    /*-ms-overflow-style: none;  /*Esconde a barra de rolagem no IE/Edge */
+}
+
+/*.carousel::-webkit-scrollbar {
+    display: none; /* Esconde a barra de rolagem no Chrome/Safari 
+}*/
+
+.carousel img {
+    flex: 0 0 250px; /* Ajusta o tamanho das imagens */
+    margin-right: 10px; /* Adiciona espaçamento entre as imagens */
+    scroll-snap-align: start;
+    max-height: 300px; /* Define uma altura máxima para as imagens */
+}
+
+.carousel-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.carousel-button.prev {
+    left: 10px;
+}
+
+.carousel-button.next {
+    right: 10px;
+}
