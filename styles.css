@@ -73,10 +73,10 @@ header {
     background-color: #875b04; /* Cor de fundo ao passar o mouse */
   }
 
-/* Espaçamento entre cabeçalho e carrossel */
+/* Espaçamento entre cabeçalho e carrossel 
 .spacer {
     height: 20px;
-}
+}*/
 
 /* Estilos do carrossel */
 .carousel {
