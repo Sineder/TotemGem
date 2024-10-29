@@ -1,195 +1,217 @@
-var container;
-var WIDTH, HEIGHT, BASE;
-var tiles = [];
-var answer = [];
-var intro = document.querySelector("#intro");
-var gameOverScreen = document.querySelector("#gameOver");
-var timerInterval;
-var timerDisplay = document.createElement("div");
-timerDisplay.id = "timerDisplay";
-document.body.appendChild(timerDisplay);
+class SlidingPuzzle {
+    constructor() {
+        this.tiles = [];
+        this.answer = [];
+        this.timerInterval = null;
+        this.gameState = {
+            isPlaying: false,
+            startTime: null
+        };
 
-window.addEventListener("resize", resizeElements, false);
-intro.addEventListener("click", startGame, false);
+        // DOM Elements
+        this.elements = {
+            container: document.querySelector("#container"),
+            intro: document.querySelector("#intro"),
+            gameOver: document.querySelector("#gameOver"),
+            timerDisplay: document.querySelector("#timerDisplay")
+        };
 
-function init() {
-    getTiles();
-    resizeElements();
-}
+        // Game constants
+        this.GRID_SIZE = 3;
+        this.TOTAL_TILES = this.GRID_SIZE * this.GRID_SIZE - 1;
 
-function getTiles() {
-    for (var i = 1; i < 9; i++) {
-        var tile = document.querySelector("#n" + i);
-        tile.addEventListener("click", moveTile, false);
-        tiles.push(tile);
+        // Bind methods
+        this.handleResize = this.handleResize.bind(this);
+        this.handleTileClick = this.handleTileClick.bind(this);
+        this.startGame = this.startGame.bind(this);
+
+        // Initialize
+        this.initializeGame();
     }
-    tiles.push(null);
-    answer = tiles;
-}
 
-function resizeElements() {
-    WIDTH = window.innerWidth;
-    HEIGHT = window.innerHeight;
-    BASE = WIDTH < HEIGHT ? Math.floor(WIDTH * 0.95) : Math.floor(HEIGHT * 0.95);
-    TILE = BASE * 0.32;
+    initializeGame() {
+        this.initializeTiles();
+        this.setupEventListeners();
+        this.handleResize();
+    }
 
-    container = document.querySelector("#container");
-    container.style.width = BASE + "px";
-    container.style.height = BASE + "px";
-    container.style.left = BASE * 0.025 + "px";
-
-    for (var i = 0; i < tiles.length; i++) {
-        if (tiles[i]) {
-            tiles[i].style.width = TILE + "px";
-            tiles[i].style.height = TILE + "px";
+    initializeTiles() {
+        for (let i = 1; i <= this.TOTAL_TILES; i++) {
+            const tile = document.querySelector(`#n${i}`);
+            tile.addEventListener("click", this.handleTileClick);
+            this.tiles.push(tile);
         }
+        this.tiles.push(null); // Empty tile
+        this.answer = [...this.tiles];
     }
 
-    renderGame(tiles);
-}
+    setupEventListeners() {
+        window.addEventListener("resize", this.handleResize);
+        this.elements.intro.addEventListener("click", this.startGame);
+    }
 
-function startGame() {
-    tiles = randomSort(tiles);
-    renderGame(tiles);
-    intro.style.opacity = "0";
-    gameOverScreen.style.opacity = "0";
-    gameOverScreen.removeEventListener("click", startGame, false);
-    setTimeout(function () {
-        intro.style.display = "none";
-        gameOverScreen.style.display = "none";
-        gameOverScreen.style.zIndex = "-1";
-    }, 500);
-    container.style.display = "initial";
-    startTimer(); // Inicia o cronômetro quando o jogo começa
-}
+    handleResize() {
+        const { innerWidth: width, innerHeight: height } = window;
+        const BASE = Math.min(width, height) * 0.95;
+        const TILE_SIZE = BASE * 0.32;
 
-function randomSort(oldArray) {
-    var newArray;
-    do {
-        newArray = [];
+        // Update container size
+        Object.assign(this.elements.container.style, {
+            width: `${BASE}px`,
+            height: `${BASE}px`,
+            left: `${BASE * 0.025}px`
+        });
 
-        while (newArray.length < oldArray.length) {
-            var i = Math.floor(Math.random() * oldArray.length);
-            if (newArray.indexOf(oldArray[i]) < 0) {
-                newArray.push(oldArray[i]);
+        // Update tiles size
+        this.tiles.forEach(tile => {
+            if (tile) {
+                Object.assign(tile.style, {
+                    width: `${TILE_SIZE}px`,
+                    height: `${TILE_SIZE}px`
+                });
+            }
+        });
+
+        this.renderBoard(BASE, TILE_SIZE);
+    }
+
+    renderBoard(BASE, TILE_SIZE) {
+        const space = (BASE - (3 * TILE_SIZE)) / 4;
+        
+        this.tiles.forEach((tile, index) => {
+            if (!tile) return;
+
+            const row = Math.floor(index / 3);
+            const col = index % 3;
+
+            Object.assign(tile.style, {
+                top: `${space + (row * (TILE_SIZE + space))}px`,
+                left: `${space + (col * (TILE_SIZE + space))}px`,
+                transition: 'top 0.3s ease, left 0.3s ease'
+            });
+        });
+    }
+
+    startGame() {
+        this.gameState.isPlaying = true;
+        this.tiles = this.shuffleTiles(this.tiles);
+        this.updateGameScreen('start');
+        this.startTimer();
+    }
+
+    shuffleTiles(tiles) {
+        let shuffled;
+        do {
+            shuffled = [...tiles].sort(() => Math.random() - 0.5);
+        } while (!this.isValidConfiguration(shuffled));
+        return shuffled;
+    }
+
+    isValidConfiguration(tiles) {
+        let inversions = 0;
+        for (let i = 0; i < tiles.length - 1; i++) {
+            for (let j = i + 1; j < tiles.length; j++) {
+                if (tiles[i] && tiles[j] && 
+                    parseInt(tiles[i].id.slice(1)) > parseInt(tiles[j].id.slice(1))) {
+                    inversions++;
+                }
             }
         }
-    } while (!validTiles(newArray));
+        return inversions % 2 === 0;
+    }
 
-    return newArray;
-}
+    handleTileClick(event) {
+        if (!this.gameState.isPlaying) return;
 
-function validTiles(array) {
-    var inversions = 0;
-    var len = array.length;
+        const index = this.tiles.indexOf(event.target);
+        const movements = this.getValidMoves(index);
 
-    for (var i = 0; i < len - 1; i++) {
-        for (var j = i + 1; j < len; j++) {
-            if (array[i] && array[j] && array[i].id > array[j].id) {
-                inversions++;
+        for (const newIndex of movements) {
+            if (this.tiles[newIndex] === null) {
+                this.moveTile(index, newIndex);
+                break;
             }
         }
+
+        if (this.checkWinCondition()) {
+            this.endGame();
+        }
     }
 
-    return inversions % 2 === 0;
-}
+    getValidMoves(index) {
+        const moves = [];
+        
+        // Left
+        if (index % 3 !== 0) moves.push(index - 1);
+        // Right
+        if (index % 3 !== 2) moves.push(index + 1);
+        // Up
+        if (index > 2) moves.push(index - 3);
+        // Down
+        if (index < 6) moves.push(index + 3);
 
-function renderGame() {
-    var space = (BASE - (3 * TILE)) / 4;
-    for (i = 0; i < tiles.length; i++) {
-        if (tiles[i]) {
-            var peca = tiles[i];
-            if (i < 3) {
-                peca.style.top = space + "px";
-            } else if (i < 6) {
-                peca.style.top = TILE + (space * 2) + "px";
-            } else {
-                peca.style.top = (TILE * 2) + (space * 3) + "px";
+        return moves;
+    }
+
+    moveTile(fromIndex, toIndex) {
+        [this.tiles[fromIndex], this.tiles[toIndex]] = [this.tiles[toIndex], this.tiles[fromIndex]];
+        this.handleResize(); // Re-render board
+    }
+
+    checkWinCondition() {
+        return this.tiles.every((tile, index) => tile === this.answer[index]);
+    }
+
+    startTimer() {
+        this.gameState.startTime = Date.now();
+        this.timerInterval = setInterval(() => this.updateTimer(), 1000);
+    }
+
+    updateTimer() {
+        const elapsed = Date.now() - this.gameState.startTime;
+        const hours = Math.floor(elapsed / 3600000);
+        const minutes = Math.floor((elapsed % 3600000) / 60000);
+        const seconds = Math.floor((elapsed % 60000) / 1000);
+
+        this.elements.timerDisplay.textContent = 
+            `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    updateGameScreen(state) {
+        const screens = {
+            start: () => {
+                Object.assign(this.elements.intro.style, {
+                    opacity: '0',
+                    display: 'none'
+                });
+                Object.assign(this.elements.gameOver.style, {
+                    opacity: '0',
+                    display: 'none',
+                    zIndex: '-1'
+                });
+                this.elements.container.style.display = 'block';
+            },
+            end: () => {
+                Object.assign(this.elements.gameOver.style, {
+                    opacity: '1',
+                    display: 'block',
+                    zIndex: '5'
+                });
+                this.elements.gameOver.addEventListener('click', this.startGame);
             }
-            if (i % 3 === 0) {
-                peca.style.left = space + "px";
-            } else if (i % 3 === 1) {
-                peca.style.left = TILE + (space * 2) + "px";
-            } else {
-                peca.style.left = (TILE * 2) + (space * 3) + "px";
-            }
-        }
+        };
+
+        screens[state]();
+    }
+
+    endGame() {
+        this.gameState.isPlaying = false;
+        clearInterval(this.timerInterval);
+        this.updateGameScreen('end');
     }
 }
 
-function checkWinning() {
-    for (var i in tiles) {
-        var t = tiles[i];
-        var a = answer[i];
-        if (t !== a) {
-            return false;
-        }
-    }
-    return true;
-}
-
-function gameOver() {
-    gameOverScreen.style.opacity = "1";
-    setTimeout(function () {
-        gameOverScreen.style.zIndex = "5";
-        gameOverScreen.style.display = "initial";
-        gameOverScreen.addEventListener("click", startGame, false);
-    }, 500);
-    pauseTimer(); // Pausa o cronômetro quando o jogo termina
-}
-
-function moveTile() {
-    var index = tiles.indexOf(this);
-
-    if (index % 3 !== 0) {
-        if (!tiles[index - 1]) {
-            tiles[index - 1] = tiles[index];
-            tiles[index] = null;
-        }
-    }
-    if ((index % 3) !== 2) {
-        if (!tiles[index + 1]) {
-            tiles[index + 1] = tiles[index];
-            tiles[index] = null;
-        }
-    }
-    if (index > 2) {
-        if (!tiles[index - 3]) {
-            tiles[index - 3] = tiles[index];
-            tiles[index] = null;
-        }
-    }
-    if (index < 6) {
-        if (!tiles[index + 3]) {
-            tiles[index + 3] = tiles[index];
-            tiles[index] = null;
-        }
-    }
-    renderGame();
-    if (checkWinning()) {
-        gameOver();
-    }
-}
-
-function startTimer() {
-    var startTime = Date.now();
-    timerInterval = setInterval(function () {
-        var elapsedTime = Date.now() - startTime;
-        var seconds = Math.floor((elapsedTime / 1000) % 60);
-        var minutes = Math.floor((elapsedTime / (1000 * 60)) % 60);
-        var hours = Math.floor((elapsedTime / (1000 * 60 * 60)) % 24);
-
-        timerDisplay.textContent =
-            (hours > 9 ? hours : "0" + hours) + ":" +
-            (minutes > 9 ? minutes : "0" + minutes) + ":" +
-            (seconds > 9 ? seconds : "0" + seconds);
-    }, 1000);
-}
-
-function pauseTimer() {
-    clearInterval(timerInterval);
-}
-
-window.onload = function () {
-    init();
-}
+// Initialize game when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    const game = new SlidingPuzzle();
+});

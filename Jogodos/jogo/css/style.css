@@ -1,100 +1,151 @@
-*{
-	border: 0;
-	margin: 0;
-	padding: 0;
+:root {
+    --primary-color: #a37706;
+    --secondary-color: #352b1b;
+    --timer-bg: rgba(0, 0, 0, 0.7);
+    --border-radius: 10px;
+    --transition-speed: 0.5s;
+    --tile-gap: 10px;
 }
 
-body{
-	background-color: #a37706;
+/* Reset and Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-#container{
-	position: absolute;
-	margin: auto;
-	background-color: #352b1b;
-	border-radius: 10px;
+body {
+    background-color: var(--primary-color);
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+/* Game Container */
+#container {
+    position: absolute;
+    margin: auto;
+    background-color: var(--secondary-color);
+    border-radius: var(--border-radius);
     background-attachment: local;
-	bottom: auto;
+    bottom: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.screen{
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	transition: all .5s;
+/* Screen Styles - Keeping original implementation */
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transition: all .5s;
 }
 
-#intro{
-	background: url('../img/intro.png') no-repeat;
-	background-size: 100% 100%;
-	opacity: 1;
+#intro {
+    background: url('../img/intro.png') no-repeat;
+    background-size: 100% 100%;
+    opacity: 1;
 }
 
-#gameOver{
-	background: url('../img/win.png') no-repeat;
-	background-size: 100% 100%;
-	opacity: 0;
-	z-index: -1;
+#gameOver {
+    background: url('../img/win.png') no-repeat;
+    background-size: 100% 100%;
+    opacity: 0;
+    z-index: -1;
 }
 
-.btn{
-	position: absolute;
-	border-radius: 10px;
-	transition: all .5s;
+/* Button Tiles */
+.btn {
+    position: absolute;
+    border-radius: var(--border-radius);
+    transition: all var(--transition-speed);
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
-#n1{
-	background: url('../img/n1.jpg') no-repeat;
-	background-size: contain;
+.btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-#n2{
-	background: url('../img/n2.jpg') no-repeat;
-	background-size: contain;
+.btn:active {
+    transform: scale(0.98);
 }
 
-#n3{
-	background: url('../img/n3.jpg') no-repeat;
-	background-size: contain;
+/* Individual Tile Images */
+[id^="n"] {
+    background-repeat: no-repeat;
+    background-size: contain;
 }
 
-#n4{
-	background: url('../img/n4.jpg') no-repeat;
-	background-size: contain;
-}
+#n1 { background-image: url('../img/n1.jpg'); }
+#n2 { background-image: url('../img/n2.jpg'); }
+#n3 { background-image: url('../img/n3.jpg'); }
+#n4 { background-image: url('../img/n4.jpg'); }
+#n5 { background-image: url('../img/n5.jpg'); }
+#n6 { background-image: url('../img/n6.jpg'); }
+#n7 { background-image: url('../img/n7.jpg'); }
+#n8 { background-image: url('../img/n8.jpg'); }
 
-#n5{
-	background: url('../img/n5.jpg') no-repeat;
-	background-size: contain;
-}
-
-#n6{
-	background: url('../img/n6.jpg') no-repeat;
-	background-size: contain;
-}
-
-#n7{
-	background: url('../img/n7.jpg') no-repeat;
-	background-size: contain;
-}
-
-#n8{
-	background: url('../img/n8.jpg') no-repeat;
-	background-size: contain;
-}
-
-/* Estilo para o cronômetro */
+/* Timer Display */
 #timerDisplay {
-	position: absolute;
-	top: 10px;
-	right: 10px;
-	font-size: 24px;
-	color: #fff;
-	background-color: rgba(0, 0, 0, 0.5);
-	padding: 10px;
-	border-radius: 5px;
-	font-family: Arial, sans-serif;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    font-size: 1.5rem;
+    color: #fff;
+    background-color: var(--timer-bg);
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--border-radius);
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(4px);
+    z-index: 10;
 }
 
+/* Media Queries */
+@media (max-width: 768px) {
+    #timerDisplay {
+        font-size: 1.25rem;
+        padding: 0.5rem 1rem;
+        top: 10px;
+        right: 10px;
+    }
+
+    .btn:hover {
+        transform: none;
+    }
+}
+
+/* Animations */
+@keyframes tileMove {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.btn.moving {
+    animation: tileMove 0.3s ease;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .btn,
+    .screen {
+        transition: none;
+    }
+    
+    .btn:hover {
+        transform: none;
+    }
+}
