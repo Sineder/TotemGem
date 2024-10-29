@@ -1,30 +1,30 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="pt-br" lang="pt-br">
-
+<!DOCTYPE html>
+<html lang="pt-br">
 <head>
-	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
-	<meta name="generator" content="Geany 1.27" />
-	<meta name="viewport" content="width=device-width,initial-scale=1" />
-	<title></title>
-	<link rel="stylesheet" type="text/css" href="css/style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Game interface with timer and interactive buttons">
+    <title>Memory Game</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-	<div id="container">
-		<div class="btn" id="n1"></div>
-		<div class="btn" id="n2"></div>
-		<div class="btn" id="n3"></div>
-		<div class="btn" id="n4"></div>
-		<div class="btn" id="n5"></div>
-		<div class="btn" id="n6"></div>
-		<div class="btn" id="n7"></div>
-		<div class="btn" id="n8"></div>
-	</div>
-	<div id="intro" class="screen"></div>
-	<div id="gameOver" class="screen"></div>
-	<div id="timerDisplay" class="cron"></div> <!-- Adicionado aqui -->
-	
-	<script src="js/script.js"></script>
+    <main id="container">
+        <div class="game-grid">
+            <button class="btn" id="n1" aria-label="Game button 1"></button>
+            <button class="btn" id="n2" aria-label="Game button 2"></button>
+            <button class="btn" id="n3" aria-label="Game button 3"></button>
+            <button class="btn" id="n4" aria-label="Game button 4"></button>
+            <button class="btn" id="n5" aria-label="Game button 5"></button>
+            <button class="btn" id="n6" aria-label="Game button 6"></button>
+            <button class="btn" id="n7" aria-label="Game button 7"></button>
+            <button class="btn" id="n8" aria-label="Game button 8"></button>
+        </div>
+
+        <div id="intro" class="screen" role="dialog" aria-label="Game introduction"></div>
+        <div id="gameOver" class="screen" role="dialog" aria-label="Game over screen"></div>
+        <div id="timerDisplay" class="cron" aria-live="polite" role="timer"></div>
+    </main>
+
+    <script src="js/script.js" defer></script>
 </body>
 </html>
-
